@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input{
+            width: 300px;
+        }
+        #movies{
+            width: 308px;
+            height: 400px;
+            overflow:scroll;
+            /* border: solid 1px ?black; */
+        }
+    </style>
+</head>
+<body>
+    <input oninput="debounce(main,500)" type="text" id="query">
+    <div id="movies"></div>
+    
+</body>
+</html>
+
+<script>
+
+    async function searchMovie(){
+        try{
+    let movie = document.getElementById("query").value;
+
+    let res = await fetch(`https://www.omdbapi.com/?apikey=d806bd70&s=${movie}`)
+
+    let data = await res.json();
+    return data.Search;
+    } catch(err){
+        console.log("err:",err);
+    }
+    }
+
+    async function main(){
+        let data =await searchMovie();
+        if(data === undefined){
+            return false;
+        }
+        appendData(data);
+        console.log("data:",data);
+    }
+    let movies_div = document.getElementById("movies");
+
+    
+    function appendData(movies){
+        movies_div.innerHTML = "";
+        movies.map(function(elem){
+            let p = document.createElement("p");
+            p.innerText = elem.Title;
+
+            movies_div.append(p);
+        })
+    }
+
+    let timerId ;
+
+    function debounce(func,delay){
+        if(timerId){
+            clearTimeout(timerId);
+        }
+
+        
+        timerId = setTimeout(() => {
+          func();  
+        }, delay);
+    }
+    
+</script>
